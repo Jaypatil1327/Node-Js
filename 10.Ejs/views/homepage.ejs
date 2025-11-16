@@ -1,0 +1,12 @@
+<%- include('header/header.ejs') %>
+<h3>Products</h3>
+
+<ul>
+  <% data.forEach(element => { %>
+  <li>
+    <a href="/about/<%= element.id %>">
+      <%= element.title %> (ID: <%= element.id %>)
+    </a>
+  </li>
+  <% }) %>
+</ul>

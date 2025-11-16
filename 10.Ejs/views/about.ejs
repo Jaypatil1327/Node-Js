@@ -1,0 +1,13 @@
+<%- include('header/header.ejs') %>
+
+<div>
+  <h3><%- product.title %></h3>
+  <p><%- product.price + "$"%></p>
+  <p><%- product.description %></p>
+  <img
+    src="<%- product.images[0] %>"
+    alt=""
+    srcset=""
+    style="width: 200px; height: 200px"
+  />
+</div>
