@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
 const { use } = require("react");
 mongoose
-  .connect(
-    "mongodb+srv://jaypatil135790_db_user:Jaypatil1327@cluster.ciq2uiw.mongodb.net/"
-  )
+  .connect()
   .then(() => console.log("database connect successfully"))
   .catch((e) => console.log(e.message));
 
