@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const database = require("./database/index");
 const userRouter = require("./router/userRouter");
+const homepageRouter = require("./router/homepage");
 
 database();
 
@@ -13,3 +14,4 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use("/api", userRouter);
+app.use("/homepage", homepageRouter);
