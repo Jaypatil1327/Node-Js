@@ -4,17 +4,18 @@ const { model } = require("mongoose");
 const jwt = require("jsonwebtoken");
 const { use } = require("react");
 
-function genToken({ _id, email, user }) {
+function genToken({ _id, email, user, role }) {
   const token = jwt.sign(
     {
       user,
       email,
+      role,
       id: _id,
     },
     process.env.JWT_TOKEN,
     { expiresIn: "15m" }
   );
-  console.log(token);
+  return token;
 }
 const register = async (req, res) => {
   try {
@@ -28,10 +29,11 @@ const register = async (req, res) => {
       password: hashedPassword,
       role: role || "user",
     });
-    genToken(newlyCreatedUser);
+    const token = genToken(newlyCreatedUser);
     res.status(201).json({
       success: true,
       message: "successfully added user info",
+      access: token,
     });
   } catch (error) {
     res.status(404).json({
@@ -51,10 +53,11 @@ const login = async (req, res) => {
     const isUserAuthenticated = await bcrypt.compare(password, hashedPassword);
 
     if (isUserAuthenticated) {
-      genToken(findCredentials);
+      const token = genToken(findCredentials);
       res.status(201).json({
         success: true,
         message: "user authenticated successfully",
+        access: token,
       });
     } else throw new Error("invalid credentials");
   } catch (error) {

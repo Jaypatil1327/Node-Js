@@ -3,6 +3,7 @@ const express = require("express");
 const database = require("./database/index");
 const userRouter = require("./router/userRouter");
 const homepageRouter = require("./router/homepage");
+const adminRouter = require("./router/admin-route");
 
 database();
 
@@ -14,4 +15,5 @@ app.listen(process.env.PORT, () => {
 });
 
 app.use("/api", userRouter);
-app.use("/homepage", homepageRouter);
+app.use("/api/homepage", homepageRouter);
+app.use("/api/admin-route", adminRouter);
