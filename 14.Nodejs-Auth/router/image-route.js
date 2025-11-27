@@ -19,9 +19,9 @@ ImageRouter.post(
 );
 
 // fetch the image
+ImageRouter.get("/getImages", fetchImage);
 
-ImageRouter.get("/get-image/:user", fetchImage);
-ImageRouter.get("/get-image", fetchImage);
+// delete image
 ImageRouter.delete("/delete/:id", authMiddleware, verifyAdmin, deleteImage);
 
 module.exports = ImageRouter;

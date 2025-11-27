@@ -2,7 +2,7 @@ const cloudinary = require("../config/cloudinaryConfig");
 const uploadImg = require("../helper/cloudinary-helper");
 const Image = require("../model/image");
 const fs = require("fs");
-
+const index = 0;
 async function deleteFile(path) {
   console.log(path);
   try {
@@ -26,9 +26,10 @@ const imageUpload = async (req, res) => {
       // save in database
       const newlyUploadedImage = await Image.create({
         ...result,
+        index: index,
         uploadedBy: req.userInfo.id,
       });
-
+      index++;
       res.status(201).json({
         success: true,
         message: "image added successfully",
@@ -44,16 +45,31 @@ const imageUpload = async (req, res) => {
 };
 
 const fetchImage = async (req, res) => {
-  const param = req.params.user || null;
-  let getImages;
-  if (param) {
-    getImages = await Image.find({ publicId: param });
-  } else getImages = await Image.find({});
-  res.status(201).json({
-    success: true,
-    message: "fetched images successfully",
-    data: getImages,
-  });
+  try {
+    const totalElements = await Image.countDocuments();
+    const sortOrder = (req.query.sortOrder || "asc") === "asc" ? 1 : -1;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 2;
+    const skip = (page - 1) * limit;
+
+    if (page * limit > totalElements) throw new Error("no data to show");
+    const getAllImage = await Image.find({})
+      .sort({ index: sortOrder })
+      .limit(limit)
+      .skip(skip);
+
+    res.status(200).json({
+      success: true,
+      message: "fetched image",
+      total: totalElements,
+      data: getAllImage,
+    });
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
 };
 
 const deleteImage = async (req, res) => {

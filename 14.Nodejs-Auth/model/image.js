@@ -14,6 +14,7 @@ const imageSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    index: Number,
   },
   { timestamp: true }
 );
