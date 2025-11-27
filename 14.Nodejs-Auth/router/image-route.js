@@ -1,5 +1,9 @@
 const express = require("express");
-const imageUpload = require("../controller/ImageController");
+const {
+  imageUpload,
+  fetchImage,
+  deleteImage,
+} = require("../controller/ImageController");
 const authMiddleware = require("../middleware/homepage-middleware");
 const verifyAdmin = require("../middleware/verify-admin");
 const upload = require("../middleware/upload-file");
@@ -15,5 +19,9 @@ ImageRouter.post(
 );
 
 // fetch the image
+
+ImageRouter.get("/get-image/:user", fetchImage);
+ImageRouter.get("/get-image", fetchImage);
+ImageRouter.delete("/delete/:id", authMiddleware, verifyAdmin, deleteImage);
 
 module.exports = ImageRouter;

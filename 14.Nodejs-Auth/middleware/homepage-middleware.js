@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 function authMiddleware(req, res, next) {
   try {
-    const token = req.rawHeaders[1].split(" ");
+    const token = req.headers.authorization.split(" ");
     const decodedToken = jwt.verify(token[1], process.env.JWT_TOKEN);
     req.userInfo = decodedToken;
     next();

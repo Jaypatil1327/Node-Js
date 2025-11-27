@@ -1,3 +1,4 @@
+const cloudinary = require("../config/cloudinaryConfig");
 const uploadImg = require("../helper/cloudinary-helper");
 const Image = require("../model/image");
 const fs = require("fs");
@@ -18,7 +19,6 @@ const imageUpload = async (req, res) => {
   try {
     if (req.file) {
       const url = req.file.path;
-
       // upload image in cloudinary
       const result = await uploadImg(url);
       // delete image after uploaded to disk
@@ -43,4 +43,40 @@ const imageUpload = async (req, res) => {
   }
 };
 
-module.exports = imageUpload;
+const fetchImage = async (req, res) => {
+  const param = req.params.user || null;
+  let getImages;
+  if (param) {
+    getImages = await Image.find({ publicId: param });
+  } else getImages = await Image.find({});
+  res.status(201).json({
+    success: true,
+    message: "fetched images successfully",
+    data: getImages,
+  });
+};
+
+const deleteImage = async (req, res) => {
+  try {
+    const getCurrentImageIdToBeDeleted = req.params.id;
+    const isCreatedByCurrentUser = await Image.find({
+      publicId: getCurrentImageIdToBeDeleted,
+      uploadedBy: req.userInfo.id,
+    });
+    if (isCreatedByCurrentUser) {
+      await cloudinary.uploader.destroy(getCurrentImageIdToBeDeleted);
+      await Image.findByIdAndDelete(isCreatedByCurrentUser._id);
+
+      res.status(200).json({
+        success: true,
+        message: "image is deleted successfully",
+      });
+    } else throw new Error("your not authorized to delete this image");
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+module.exports = { imageUpload, fetchImage, deleteImage };

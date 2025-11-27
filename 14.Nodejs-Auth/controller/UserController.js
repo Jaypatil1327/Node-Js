@@ -17,6 +17,7 @@ function genToken({ _id, email, user, role }) {
   );
   return token;
 }
+
 const register = async (req, res) => {
   try {
     const { user, email, password, role } = req.body; // user , email , password , role
@@ -68,4 +69,39 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const changePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.userInfo.id;
+    const previousDetails = await User.findById(userId);
+    console.log(previousDetails);
+    const previousPassword = await bcrypt.compare(
+      oldPassword,
+      previousDetails.password
+    );
+    if (previousPassword) {
+      if (previousPassword === newPassword)
+        throw new Error("old password and new password are same!!");
+      else {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        const updatedObj = await User.findByIdAndUpdate(userId, {
+          password: hashedPassword,
+        });
+
+        res.status(200).json({
+          success: true,
+          message: "password updated successfully",
+          details: updatedObj,
+        });
+      }
+    } else throw new Error("enter correct password");
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+module.exports = { register, login, changePassword };
